@@ -76,11 +76,11 @@ pitchers_links = []
 
 # # save data about games in the csv file
 # try:
-#     ws_results = pd.DataFrame(games_result)
-#     # print(ws_results)
-#     # created new copy the file to save to not lose the original data
-#     ws_results.to_csv('world_series_results_copy.csv', index=False)
-#     print('world_series_results.csv created')
+    # ws_results = pd.DataFrame(games_result)
+    # # print(ws_results)
+    # # created new copy the file to save to not lose the original data
+    # ws_results.to_csv('../dirty_data/world_series_results_copy.csv', index=False)
+    # print('world_series_results.csv created')
 
 # except Exception as err:
 #     print(f"Error during creating world_series_results.csv file occur {err}")
@@ -105,11 +105,11 @@ pitchers_links = []
 #     # links = games_links
 
 #     # uncomment this line if want to run only these scrapping data
-#     links_from_csv = pd.read_csv('../utils/ws_games_links.csv', skipinitialspace=True)
-#     links = links_from_csv['url'].tolist()
+#     # links_from_csv = pd.read_csv('../utils/ws_games_links.csv', skipinitialspace=True)
+#     # links = links_from_csv['url'].tolist()
 
 #     # uncomment this for testing and debugging purposes
-#     # links = ['https://www.baseball-almanac.com/ws/yr1990ws.shtml']
+#     links = ['https://www.baseball-almanac.com/ws/yr1990ws.shtml']
 #     # links = ['https://www.baseball-almanac.com/ws/yr2002ws.shtml']
 #     # links = ['https://www.baseball-almanac.com/ws/yr1903ws.shtml', 'https://www.baseball-almanac.com/ws/yr1907ws.shtml', 'https://www.baseball-almanac.com/ws/yr1915ws.shtml', 'https://www.baseball-almanac.com/ws/yr1905ws.shtml', 'https://www.baseball-almanac.com/ws/yr1990ws.shtml']
 #     # print(links)
@@ -231,8 +231,7 @@ pitchers_links = []
 #                         initial_data['second_team'].append(pitcher_name)
 #                         # print('team_links 6', team_links)
 #                         initial_data['second_team_urls'].append(team_links)
-#                         # print("6", pitcher_name, pitchers_links, initial_data)
-                  
+#                         # print("6", pitcher_name, pitchers_links, initial_data)   
 #         # print('initial_data', initial_data)
 #         games_players_result.append({'World Series': initial_data['world_series'], 'Team 1': initial_data['first_header'], 'Team 1 Pitchers': initial_data['first_team'], 'Team 1 Pitchers Links': initial_data['first_team_urls'], 'Team 1 wins': initial_data['first_team_totals'], 'Team 2': initial_data['second_header'], 'Team 2 Pitchers': initial_data['second_team'], 'Team 2 Pitchers Links': initial_data['second_team_urls'], 'Team 2 wins': initial_data['second_team_totals'], 'Links': link })
 #         # print('games_players_result', games_players_result)
@@ -247,7 +246,7 @@ pitchers_links = []
 #     ws_players_results = pd.DataFrame(games_players_result)
 #     # print(ws_results)
 #     # created new copy the file to save to not lose the original data
-#     ws_players_results.to_csv('world_series_pitchers_results_copy.csv', index=False)
+#     ws_players_results.to_csv('../dirty_data/world_series_pitchers_results_copy.csv', index=False)
 #     # print('world_series_pitchers_results.csv created')
 
 # except Exception as err:
@@ -266,72 +265,72 @@ pitchers_links = []
 
 # #scrapping pitchers biographies
 
-try:
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-    wait = WebDriverWait(driver, 10)
+# try:
+#     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+#     wait = WebDriverWait(driver, 10)
 
-    # # uncomment this line if running the whole file and creating data from scratch
-    # links = pitchers_links
+#     # # uncomment this line if running the whole file and creating data from scratch
+#     # links = pitchers_links
 
-    # # uncomment this line if want to run only these scrapping data
-    links_from_csv = pd.read_csv('../utils/ws_pitchers_links.csv', skipinitialspace=True)
-    links = links_from_csv['url'].unique().tolist()
-    print(len(links_from_csv), len(links))
+#     # # uncomment this line if want to run only these scrapping data
+#     links_from_csv = pd.read_csv('../utils/ws_pitchers_links.csv', skipinitialspace=True)
+#     links = links_from_csv['url'].unique().tolist()
+#     print(len(links_from_csv), len(links))
 
-#   # uncomment this for testing and debugging purposes
-    # links = ['https://www.baseball-almanac.com/players/player.php?p=janseke01', 'https://www.baseball-almanac.com/players/player.php?p=astacez01', 'https://www.baseball-almanac.com/players/player.php?p=mcginjo01']
-    # print(links)
+# #   # uncomment this for testing and debugging purposes
+#     # links = ['https://www.baseball-almanac.com/players/player.php?p=janseke01', 'https://www.baseball-almanac.com/players/player.php?p=astacez01', 'https://www.baseball-almanac.com/players/player.php?p=mcginjo01']
+#     # print(links)
 
-    for link in links:
-        print('link', link)
-        driver.get(link)
-        sleep(3)
+#     for link in links:
+#         print('link', link)
+#         driver.get(link)
+#         sleep(3)
         
-        result_table = wait.until(EC.presence_of_element_located((By.XPATH, "//table[@class='boxed'][1]")))
+#         result_table = wait.until(EC.presence_of_element_located((By.XPATH, "//table[@class='boxed'][1]")))
 
-        table_rows = result_table.find_elements(By.CSS_SELECTOR, 'tr')
-        initial_data = {
-            'full_name': '',
-            'born_on': '',
-            'born_in': '',
-            'college': ''
-        }
-        for row in table_rows:
-            row_data = row.find_elements(By.CSS_SELECTOR, 'td')
-            data = row_data[0]
-            class_name = data.get_attribute("class")
-            if class_name == 'header':
-                # print("1")
-                initial_data['full_name'] = data.find_elements(By.CSS_SELECTOR, 'h2')[0].text
-                # print("1", initial_data)
-            if class_name == 'biocolpad' and data.text == 'Born On:':
-                # print("2")
-                initial_data['born_on'] = row_data[1].text
-                # print("2", initial_data)
-            if class_name == 'biocolpad' and 'Born In:' in data.text:
-                # print("3")
-                born = row_data[1].text
-                # print(born)
-                initial_data['born_in'] = born
-            if class_name == 'biocolpad' and data.text == 'College:':
-                # print("4")
-                initial_data['college'] = row_data[1].text
-        print('initial_data', initial_data)
-        WS_players.append({'Full name': initial_data['full_name'], 'Born in': initial_data['born_in'], 'Born-on': initial_data['born_on'], 'College': initial_data['college'], 'Links': link })
+#         table_rows = result_table.find_elements(By.CSS_SELECTOR, 'tr')
+#         initial_data = {
+#             'full_name': '',
+#             'born_on': '',
+#             'born_in': '',
+#             'college': ''
+#         }
+#         for row in table_rows:
+#             row_data = row.find_elements(By.CSS_SELECTOR, 'td')
+#             data = row_data[0]
+#             class_name = data.get_attribute("class")
+#             if class_name == 'header':
+#                 # print("1")
+#                 initial_data['full_name'] = data.find_elements(By.CSS_SELECTOR, 'h2')[0].text
+#                 # print("1", initial_data)
+#             if class_name == 'biocolpad' and data.text == 'Born On:':
+#                 # print("2")
+#                 initial_data['born_on'] = row_data[1].text
+#                 # print("2", initial_data)
+#             if class_name == 'biocolpad' and 'Born In:' in data.text:
+#                 # print("3")
+#                 born = row_data[1].text
+#                 # print(born)
+#                 initial_data['born_in'] = born
+#             if class_name == 'biocolpad' and data.text == 'College:':
+#                 # print("4")
+#                 initial_data['college'] = row_data[1].text
+#         print('initial_data', initial_data)
+#         WS_players.append({'Full name': initial_data['full_name'], 'Born in': initial_data['born_in'], 'Born-on': initial_data['born_on'], 'College': initial_data['college'], 'Links': link })
 
-except Exception as e:
-    print(f"An exception occurred: {type(e).__name__} {e}")
-finally:
-    driver.quit()
+# except Exception as e:
+#     print(f"An exception occurred: {type(e).__name__} {e}")
+# finally:
+#     driver.quit()
 
 
-try:
-    ws_players_biography = pd.DataFrame(WS_players)
-    # created new copy the file to save to not lose the original data
-    ws_players_biography.to_csv('world_series_pitchers_biography_copy.csv', index=False)
-    print('world_series_pitchers_biography.csv created')
+# try:
+#     ws_players_biography = pd.DataFrame(WS_players)
+#     # created new copy the file to save to not lose the original data
+#     ws_players_biography.to_csv('../dirty_data/world_series_pitchers_biography_copy.csv', index=False)
+#     print('world_series_pitchers_biography.csv created')
 
-except Exception as err:
-    print(f"Error during creating world_series_pitchers_biography.csv file occur {err}")
+# except Exception as err:
+#     print(f"Error during creating world_series_pitchers_biography.csv file occur {err}")
 
 
