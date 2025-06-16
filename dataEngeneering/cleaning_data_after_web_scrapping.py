@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 '''Data cleaning'''
 
@@ -130,7 +131,7 @@ clean_df_world_series_pitchers_biography['Born in'] = clean_df_world_series_pitc
 
 clean_df_world_series_pitchers_biography['was_in_college'] = clean_df_world_series_pitchers_biography.apply(lambda x: False if x['College'] == 'None Attended' else True, axis = 1 )
 
-clean_df_world_series_results.rename(columns={'National League': 'nl', 'American League' : 'al', 'Links': 'games_links', 'AL Wins': 'al score', 'NL Wins': 'nl score' }, inplace=True, errors='raise')
+clean_df_world_series_results.rename(columns={'National League': 'nl team', 'American League' : 'al team', 'Links': 'games_links', 'AL Wins': 'al score', 'NL Wins': 'nl score' }, inplace=True, errors='raise')
 clean_df_world_series_pitchers_results.rename(columns={'Team 1' : 't1', 'Team 2': 't2', 'Team 1 Pitchers': 't1 pitchers', 'Team 2 Pitchers': 't2 pitchers', 'Team 1 Pitchers Links': 't1 pitchers links', 'Team 2 Pitchers Links': 't2 pitchers links', 'Team 1 wins': 't1 score', 'Team 2 wins': 't2 score', 'Links': 'links'}, inplace=True, errors='raise')
 clean_df_world_series_pitchers_biography.rename(columns={'Full name': 'name', 'Born in' : 'birthplace', 'Links': 'link', 'Born-on': 'birthdate', 'College': 'college' }, inplace=True, errors='raise')
 
@@ -140,18 +141,17 @@ clean_df_world_series_pitchers_biography.rename(columns={'Full name': 'name', 'B
 
 world_series_data = pd.merge(clean_df_world_series_results, clean_df_world_series_pitchers_results, on='year', how='inner')
 
-world_series_data['al pitchers'] = world_series_data.apply(lambda x: x['t1 pitchers'] if x['al'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 pitchers'], axis=1)
-world_series_data['nl pitchers'] = world_series_data.apply(lambda x: x['t1 pitchers'] if x['nl'] == x['t1'] and x['nl score'] == x['t1 score'] else x['t2 pitchers'], axis=1)
-world_series_data['al pitchers links'] = world_series_data.apply(lambda x: x['t1 pitchers links'] if x['al'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 pitchers links'], axis=1)
-world_series_data['nl pitchers links'] = world_series_data.apply(lambda x: x['t1 pitchers links'] if x['nl'] == x['t1'] and x['nl score'] == x['t1 score'] else x['t2 pitchers links'], axis=1)
-world_series_data['al pitchers and links'] = world_series_data.apply(lambda x: x['t1 players and links'] if x['al'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 players and links'], axis=1)
-world_series_data['nl pitchers and links'] = world_series_data.apply(lambda x: x['t1 players and links'] if x['nl'] == x['t1'] and x['nl score'] == x['t1 score'] else x['t2 players and links'], axis=1)
+world_series_data['al pitchers'] = world_series_data.apply(lambda x: x['t1 pitchers'] if x['al team'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 pitchers'], axis=1)
+world_series_data['nl pitchers'] = world_series_data.apply(lambda x: x['t1 pitchers'] if x['nl team'] == x['t1'] and x['nl score'] == x['t1 score'] else x['t2 pitchers'], axis=1)
+world_series_data['al pitchers links'] = world_series_data.apply(lambda x: x['t1 pitchers links'] if x['al team'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 pitchers links'], axis=1)
+world_series_data['nl pitchers links'] = world_series_data.apply(lambda x: x['t1 pitchers links'] if x['nl team'] == x['t1'] and x['nl score'] == x['t1 score'] else x['t2 pitchers links'], axis=1)
+world_series_data['al pitchers and links'] = world_series_data.apply(lambda x: x['t1 players and links'] if x['al team'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 players and links'], axis=1)
+world_series_data['nl pitchers and links'] = world_series_data.apply(lambda x: x['t1 players and links'] if x['nl team'] == x['t1'] and x['nl score'] == x['t1 score'] else x['t2 players and links'], axis=1)
 
 world_series_data.drop(['t1', 't2', 't1 score', 't2 score', 't1 pitchers', 't2 pitchers', 't1 pitchers links', 't2 pitchers links', 'links', 'index', 't1 players and links', 't2 players and links'], axis=1, inplace=True) 
 
-
-world_series_data_nl = world_series_data[['year','nl', 'nl score', 'nl pitchers and links' ]]
-world_series_data_al = world_series_data[['year','al', 'al score', 'al pitchers and links' ]]
+world_series_data_nl = world_series_data[['year','nl team', 'nl score', 'nl pitchers and links' ]]
+world_series_data_al = world_series_data[['year','al team', 'al score', 'al pitchers and links' ]]
 
 # create separate dataFrames with data by league and players
 world_series_data_nl = world_series_data_nl.explode("nl pitchers and links", ignore_index=True)
@@ -165,6 +165,17 @@ world_series_data_nl.drop('nl pitchers and links', axis=1, inplace=True)
 world_series_data_al.drop('al pitchers and links', axis=1, inplace=True) 
 nl = pd.merge(world_series_data_nl, clean_df_world_series_pitchers_biography, how="left", on=["link"])
 al = pd.merge(world_series_data_al, clean_df_world_series_pitchers_biography, how="left", on=["link"])
+# clean name and left only writings from pitchers data
+nl['name'] = nl['name_y']
+al['name'] = al['name_y']
+nl.drop(['name_x', 'name_y'], axis=1, inplace=True) 
+al.drop(['name_x', 'name_y'], axis=1, inplace=True) 
+
+# create dataFrame for unique team names
+unique_al = world_series_data_al['al team'].unique()
+unique_nl = world_series_data_nl['nl team'].unique()
+all_teams = np.concatenate([unique_nl, unique_al], axis=0)
+unique_teams = pd.Series(all_teams).unique()
 
 
 try:
@@ -172,6 +183,7 @@ try:
     nl_results = pd.DataFrame(nl)
     al_results = pd.DataFrame(al)
     ws_pitchers_biography = pd.DataFrame(clean_df_world_series_pitchers_biography)
+    unique_teams_name = pd.DataFrame(unique_teams, columns = ['team_name'])
     
     ws_results.to_csv('../cleaned dataframes/world_series_data.csv', index=False)
     print('clean_df_world_series_results.csv created')
@@ -181,18 +193,16 @@ try:
     print('al_results.csv created')
     ws_pitchers_biography.to_csv('../cleaned dataframes/clean_df_world_series_pitchers_biography.csv', index=False)
     print('clean_df_world_series_pitchers_biography.csv created')
+    unique_teams_name.to_csv('../cleaned dataframes/unique_teams_name.csv', index=False)
+    print('unique_teams_name.csv created')
 
 except Exception as err:
-    print(f"Error during creating world_series_results.csv file occur {err}")
-pd.set_option('display.max_colwidth', None)
+    print(f"An exception occurred: {type(err).__name__} {err}")
+# pd.set_option('display.max_colwidth', None)
 
 # print(nl.info())
 # print(al.info())
 # manually check data 
-# unique_al = world_series_data_al['al'].unique()
-# unique_nl = world_series_data_nl['nl'].unique()
-# print(unique_al)
-# print(unique_nl)
 
 # ['Boston Americans' 'Philadelphia Athletics' 'Chicago White Sox'
 #  'Detroit Tigers' 'Boston Red Sox' 'Cleveland Indians' 'New York Yankees'
