@@ -22,7 +22,9 @@ try:
             nl_team TEXT NOT NULL,
             nl_score INTEGER NOT NULL,
             al_team TEXT NOT NULL,
-            al_score INTEGER NOT NULL
+            al_score INTEGER NOT NULL,
+            FOREIGN KEY (nl_team) REFERENCES Teams(team_name),
+            FOREIGN KEY (al_team) REFERENCES Teams(team_name)
         )
         """)
 
@@ -88,6 +90,15 @@ try:
             print('League table data created')
         except Exception as e:
             print("Exception:", e)
+            
+        try:
+            for _, row in  unique_teams_name.iterrows():
+                cursor.execute('''INSERT INTO 
+                Teams (team_name) VALUES (?)
+                ''', (row['team_name'], ))
+            print('Teams table data created')
+        except Exception as e:
+            print("Exception:", e)
 
         try:
             for _, row in world_series_data.iterrows():
@@ -104,15 +115,6 @@ try:
                 PitchersData (pitcher_name, birthplace, birthdate, college, link, was_in_college) VALUES (?,?,?,?,?,?)
                 ''', (row['name'], row['birthplace'], row['birthdate'], row['college'],row['link'], row['was_in_college']))
             print('PitchersData table data created')
-        except Exception as e:
-            print("Exception:", e)
-
-        try:
-            for _, row in  unique_teams_name.iterrows():
-                cursor.execute('''INSERT INTO 
-                Teams (team_name) VALUES (?)
-                ''', (row['team_name'], ))
-            print('Teams table data created')
         except Exception as e:
             print("Exception:", e)
 
