@@ -3,11 +3,11 @@ import pandas as pd
 import altair as alt
 
 try: 
-    ws_results=pd.read_csv('../cleaned dataframes/world_series_data.csv')
-    nl_results=pd.read_csv('../cleaned dataframes/nl_results.csv')
-    al_results=pd.read_csv('../cleaned dataframes/al_results.csv')
-    ws_pitchers_biography=pd.read_csv('../cleaned dataframes/clean_df_world_series_pitchers_biography.csv')
-    unique_teams_name=pd.read_csv('../cleaned dataframes/unique_teams_name.csv')
+    ws_results=pd.read_csv('cleaned dataframes/world_series_data.csv')
+    nl_results=pd.read_csv('cleaned dataframes/nl_results.csv')
+    al_results=pd.read_csv('cleaned dataframes/al_results.csv')
+    ws_pitchers_biography=pd.read_csv('cleaned dataframes/clean_df_world_series_pitchers_biography.csv')
+    unique_teams_name=pd.read_csv('cleaned dataframes/unique_teams_name.csv')
 
 
     # data for search

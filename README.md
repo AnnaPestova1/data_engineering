@@ -36,4 +36,4 @@ _Run database query program:_
 
 _Launch the Streamlit app:_
 
-`streamlit run streamlit_dashboard.py`
+`streamlit run streamlit_app.py`
