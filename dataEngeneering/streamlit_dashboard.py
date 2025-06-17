@@ -72,7 +72,7 @@ try:
 )
     st.altair_chart(chart)
 
-    st.subheader('Explore college attendance')
+    st.subheader('Explore college attendance via sidebar dropdown', divider='blue')
     st.dataframe(filtered_college_data, hide_index=True)
 
     st.header('Birth Places')
@@ -87,7 +87,7 @@ try:
 
     st.line_chart(birthplace_data, x='birthplace', y='count')
 
-    st.subheader('Explore places of birth')
+    st.subheader('Explore places of birth via sidebar dropdown', divider='blue')
     st.dataframe(filtered_birthplace_data, hide_index=True)
 except Exception as e:
         st.toast(f"The error occur: {e}")
