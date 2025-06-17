@@ -2,7 +2,8 @@ import sqlite3
 import sys
 
 def exit():
-    print('See you later!')
+    print('\n')
+    print('Wrong input! See you later!')
     sys.exit()
 
 def main():
@@ -22,7 +23,9 @@ def main():
                         y - yes
                         n - return to main menu
                         to exit type something else''')
+                print('\n')
                 query = input('Choice: ').strip()
+                print('\n')
                 if query == 'y':
                     func()
                 elif query == 'n':
@@ -32,14 +35,16 @@ def main():
             def initial_query():
 
                     print('What you want to query?')
+                    print('\n')
                     print('Choice options:')
-
+                    print('\n')
                     print('1 Word Series results by year')
                     print('2 Word Series results by teams')
                     print('3 Receive a list of the pitchers from a team')
                     print('4 To exit')
-
+                    print('\n')
                     choice = input('Your choice: ').strip()
+                    print('\n')
                     if int(choice) == 1:
                         ws_by_years()
                     if int(choice) == 2:
@@ -51,8 +56,11 @@ def main():
 
             def ws_by_years():
                 try:
+                    print('\n')
                     print('Type the year from 1903 to 2025')
+                    print('\n')
                     year = input('Your choice: ').strip()
+                    print('\n')
                     if int(year) >= 1903 and int(year) <= 2025:
                         cursor.execute('SELECT * FROM WorldSeriesResults WHERE year = ?', (int(year), ))
                         result = cursor.fetchall()
@@ -75,9 +83,12 @@ def main():
                     cursor.execute('SELECT * FROM Teams')
                     teams_list = cursor.fetchall()
                     removed_tuples = list(map(lambda x: ''.join(x), teams_list))
+                    print('\n')
                     print("Choose the team from the following list:")
+                    print('\n')
                     print(removed_tuples)
                     team = input('Your choice: ').strip()
+                    print('\n')
                     if team in removed_tuples:
                         cursor.execute('''SELECT t.team_name, w.year, w.nl_team, w.nl_score, w.al_team, w.al_score
                                        FROM Teams t 
@@ -106,9 +117,13 @@ def main():
                     cursor.execute('SELECT * FROM Teams')
                     teams_list = cursor.fetchall()
                     removed_tuples = list(map(lambda x: ''.join(x), teams_list))
+                    print('\n')
                     print("Choose the team from the following list:")
+                    print('\n')
                     print(removed_tuples)
+                    print('\n')
                     team = input('Your choice: ').strip()
+                    print('\n')
                     if team in removed_tuples:
                         cursor.execute('''SELECT pitcher_name
                                     FROM NationalLeagueData
@@ -120,7 +135,9 @@ def main():
                                     ''', (team, team))
                         results = cursor.fetchall()
                         removed_tuples_players = list(map(lambda x: ''.join(x), results))
+                        print('\n')
                         print(f"For team {team} in World Series in different years played these pitchers: {", ".join(removed_tuples_players)}.")
+                        print('\n')
                         query_more(pitchers_by_team)
                     else:
                         exit()
@@ -144,5 +161,4 @@ def main():
     finally:
         conn.close()
 
-# if __name__ == "__main__":
 main()

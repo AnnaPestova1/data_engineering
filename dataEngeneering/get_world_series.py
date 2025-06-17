@@ -21,6 +21,7 @@ pitchers_links = []
 #     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 #     wait = WebDriverWait(driver, 10)
 #     driver.get('https://www.baseball-almanac.com/ws/wsmenu.shtml')
+#     sleep(3)
 
 #     result_table = wait.until(EC.presence_of_element_located((By.XPATH, "//table[@class='boxed'][1]")))
 #     # print('result_table', result_table)
@@ -76,11 +77,11 @@ pitchers_links = []
 
 # # save data about games in the csv file
 # try:
-    # ws_results = pd.DataFrame(games_result)
-    # # print(ws_results)
-    # # created new copy the file to save to not lose the original data
-    # ws_results.to_csv('../dirty_data/world_series_results_copy.csv', index=False)
-    # print('world_series_results.csv created')
+#     ws_results = pd.DataFrame(games_result)
+#     # print(ws_results)
+#     # created new copy the file to save to not lose the original data
+#     ws_results.to_csv('../dirty_data/world_series_results_copy.csv', index=False)
+#     print('world_series_results.csv created')
 
 # except Exception as err:
 #     print(f"Error during creating world_series_results.csv file occur {err}")

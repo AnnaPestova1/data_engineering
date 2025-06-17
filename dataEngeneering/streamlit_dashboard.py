@@ -58,7 +58,7 @@ try:
     total_pitchers_number = len(ws_pitchers_biography)
     in_college = ws_pitchers_biography['college'].value_counts().get('None Attended', 0)
     no_college = total_pitchers_number - in_college
-    college_attendance = pd.DataFrame({'attendance': ['attended', 'non_attended'], 'count':[in_college, no_college]})
+    college_attendance = pd.DataFrame({'attendance': ['attended', 'non attended'], 'count':[in_college, no_college]})
 
     filtered_college_data = ws_pitchers_biography[['name', 'college']]
 
