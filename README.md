@@ -15,7 +15,7 @@ Dashboard Program
 A Streamlit-based web dashboard that visualizes the World Series results, pitcher biographies, and other data. Users can interactively explore team performances and player stats by year or league.
 
 _Live Demo_
- Streamlit app: https://dataengineering-anna-pestova.streamlit.app
+ Streamlit app: https://dataengineering-annapestova.streamlit.app
 
 _Running Locally_
 To run this project locally:
