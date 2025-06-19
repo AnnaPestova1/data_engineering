@@ -141,12 +141,13 @@ clean_df_world_series_pitchers_biography.rename(columns={'Full name': 'name', 'B
 
 world_series_data = pd.merge(clean_df_world_series_results, clean_df_world_series_pitchers_results, on='year', how='inner')
 
-world_series_data['al pitchers'] = world_series_data.apply(lambda x: x['t1 pitchers'] if x['al team'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 pitchers'], axis=1)
 world_series_data['nl pitchers'] = world_series_data.apply(lambda x: x['t1 pitchers'] if x['nl team'] == x['t1'] and x['nl score'] == x['t1 score'] else x['t2 pitchers'], axis=1)
-world_series_data['al pitchers links'] = world_series_data.apply(lambda x: x['t1 pitchers links'] if x['al team'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 pitchers links'], axis=1)
+world_series_data['al pitchers'] = world_series_data.apply(lambda x: x['t1 pitchers'] if x['al team'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 pitchers'], axis=1)
 world_series_data['nl pitchers links'] = world_series_data.apply(lambda x: x['t1 pitchers links'] if x['nl team'] == x['t1'] and x['nl score'] == x['t1 score'] else x['t2 pitchers links'], axis=1)
-world_series_data['al pitchers and links'] = world_series_data.apply(lambda x: x['t1 players and links'] if x['al team'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 players and links'], axis=1)
+world_series_data['al pitchers links'] = world_series_data.apply(lambda x: x['t1 pitchers links'] if x['al team'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 pitchers links'], axis=1)
 world_series_data['nl pitchers and links'] = world_series_data.apply(lambda x: x['t1 players and links'] if x['nl team'] == x['t1'] and x['nl score'] == x['t1 score'] else x['t2 players and links'], axis=1)
+world_series_data['al pitchers and links'] = world_series_data.apply(lambda x: x['t1 players and links'] if x['al team'] == x['t1'] and x['al score'] == x['t1 score'] else x['t2 players and links'], axis=1)
+
 
 world_series_data.drop(['t1', 't2', 't1 score', 't2 score', 't1 pitchers', 't2 pitchers', 't1 pitchers links', 't2 pitchers links', 'links', 'index', 't1 players and links', 't2 players and links'], axis=1, inplace=True) 
 
