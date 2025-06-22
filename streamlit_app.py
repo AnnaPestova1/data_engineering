@@ -42,21 +42,25 @@ try:
     game_table= game_table.rename(columns={'nl team': 'National League team', 'nl score': 'National League score', 'nl pitchers': 'National League pitchers', 'al team': 'American League team', 'al score': 'American League score', 'al pitchers': 'American League pitchers'}, errors='raise')
     game_table['National League pitchers'] = game_table['National League pitchers'].apply(lambda x: ', '.join(ast.literal_eval(x)))
     game_table['American League pitchers'] = game_table['American League pitchers'].apply(lambda x: ', '.join(ast.literal_eval(x)))
-    
+    reorganized_game_table = game_table.iloc[:, [0, 3, 1, 2, 5, 4, 6]]
     if min_year >1903 & max_year<2024:  
-        game_table = game_table[(game_table['year'] >= min_year) & (game_table['year'] <= max_year)]
+        reorganized_game_table = reorganized_game_table[(reorganized_game_table['year'] >= min_year) & (reorganized_game_table['year'] <= max_year)]
     if selected_league!= None:
-
         if selected_league == 'National League':
-            game_table = game_table.drop(columns=['American League team', 'American League score', 'American League pitchers'])
+            reorganized_game_table = reorganized_game_table.drop(columns=['American League team', 'American League score', 'American League pitchers'])
         else:
-            game_table = game_table.drop(columns=['National League team', 'National League score', 'National League pitchers'])
+            reorganized_game_table = reorganized_game_table.drop(columns=['National League team', 'National League score', 'National League pitchers'])
 
 
     if selected_team!= None:
-        game_table = game_table[(game_table['American League team'] == selected_team) | (game_table['National League team'] == selected_team)]
+        if selected_league =='American League':
+            reorganized_game_table = reorganized_game_table[(reorganized_game_table['American League team'] == selected_team)]
+        elif selected_league == 'National League':
+            reorganized_game_table = reorganized_game_table[(reorganized_game_table['National League team'] == selected_team)]
+        else:
+            reorganized_game_table = reorganized_game_table[(reorganized_game_table['American League team'] == selected_team) | (reorganized_game_table['National League team'] == selected_team)]
     st.title('Some Facts About the World Series')
-    reorganized_game_table = game_table.iloc[:, [0, 3, 1, 2, 5, 4, 6]]
+
 
     st.header('World Series games')
     st.dataframe(reorganized_game_table, hide_index=True)
@@ -75,20 +79,63 @@ try:
 
     filtered_college_data = filtered_college_data[(ws_pitchers_biography['college'] == selected_college)]
 
+    college_by_year = college_birthplace_displaying_data[['year', 'was_in_college']]
+    # non_attended_college_by_year = college_birthplace_displaying_data[['year', 'was_in_college']]
 
-    attended_college = college_birthplace_displaying_data[['year', 'was_in_college']]
-    non_attended_college = college_birthplace_displaying_data[['year', 'was_in_college']]
+    attended_college_by_year = college_by_year.groupby('year')['was_in_college'].apply(lambda x: (x == True).sum()).reset_index().rename(columns={'was_in_college': 'attended'}, errors='raise')
+    non_attended_college_by_year = college_by_year.groupby('year')['was_in_college'].apply(lambda x: (x == False).sum()).reset_index().rename(columns={'was_in_college': 'non attended'}, errors='raise')
+    line_chart_college_attendance_by_year = attended_college_by_year.merge(non_attended_college_by_year, how = 'outer')
+    line_chart_college_attendance_by_year['year'] = pd.to_datetime(line_chart_college_attendance_by_year['year'], format='%Y', errors='coerce')
 
-    attended_college = attended_college.groupby('year')['was_in_college'].apply(lambda x: (x == True).sum()).reset_index().rename(columns={'was_in_college': 'attended'}, errors='raise')
-    non_attended_college = non_attended_college.groupby('year')['was_in_college'].apply(lambda x: (x == False).sum()).reset_index().rename(columns={'was_in_college': 'non attended'}, errors='raise')
-    line_chart_college_attendance = attended_college.merge(non_attended_college, how = 'outer')
-    line_chart_college_attendance['year'] = pd.to_datetime(line_chart_college_attendance['year'], format='%Y', errors='coerce')
+    college_by_team = college_birthplace_displaying_data[['nl team', 'al team', 'was_in_college']]
 
+    college_by_team = college_by_team.rename(columns={'nl team': 'team'}, errors='raise')
 
+    college_by_team['team'] = college_by_team['team'].fillna(college_by_team['al team'])
+    college_by_team = college_by_team.drop(columns=['al team'])
+    # non_attended_college_by_team = college_birthplace_displaying_data[['year', 'was_in_college']]
+
+    attended_college_by_team = college_by_team.groupby('team')['was_in_college'].apply(lambda x: (x == True).sum()).reset_index().rename(columns={'was_in_college': 'attended'}, errors='raise')
+    non_attended_college_by_team = college_by_team.groupby('team')['was_in_college'].apply(lambda x: (x == False).sum()).reset_index().rename(columns={'was_in_college': 'non attended'}, errors='raise')
+
+    line_chart_college_attendance_by_team = attended_college_by_team.merge(non_attended_college_by_team, how = 'outer')
+
+    st.header('Explore Pitchers Data By Name')
+
+    @st.dialog('Did you know?')
+
+    def pitcher_name(name):
+        filtered_college_birthplace_displaying_data = college_birthplace_displaying_data[(college_birthplace_displaying_data['name'] == name)].reset_index()
+        collected_data = {}
+        list_of_teams=[]
+        for i in range(len(filtered_college_birthplace_displaying_data)):
+            year = int(filtered_college_birthplace_displaying_data['year'][i])
+            team = filtered_college_birthplace_displaying_data['nl team'][i] if pd.notna(filtered_college_birthplace_displaying_data['nl team'][i]) else filtered_college_birthplace_displaying_data['al team'][i]
+            was_in_college = filtered_college_birthplace_displaying_data['was_in_college'][i]
+            college = filtered_college_birthplace_displaying_data['college'][i]
+            if team not in collected_data.keys():
+                collected_data[team] = [year]
+                list_of_teams.append(team)
+            else:
+                collected_data[team].append(year)
+
+        team_and_year_played = []
+        for team_name in list_of_teams:
+            team_and_year_played.append(f"with the {team_name} in {", ".join(str(y) for y in collected_data[team_name])}")
+        
+        college_attended = f"{name} {f'attended {college}' if was_in_college == True else 'has not attended college'}"
+
+        st.write(f"**{name}** was born on {filtered_college_birthplace_displaying_data["birthdate"][0].strftime('%m-%d-%Y')} in {filtered_college_birthplace_displaying_data["birthplace"][0]} and played {", and ".join(team_and_year_played)}. {college_attended}.")
+
+    form = st.form("pitcher_data")
+    name = form.selectbox('Select Pitcher', pitchers_name, placeholder="Select or type pitcher name", index=None)
+    submitted = form.form_submit_button("Submit")
+    if submitted:
+        pitcher_name(name)
 
     st.header('College attendance')
 
-    tab1, tab2, tab3 = st.tabs(['Pie Chart', 'Line Chart By Year', 'Dropdown By College'])
+    tab1, tab2, tab3, tab4 = st.tabs(['Pie Chart', 'Line Chart By Year', 'Line Chart By Team', 'Dropdown By College'])
 
     with tab1:
         chart = alt.Chart(college_attendance).mark_arc().encode(
@@ -97,8 +144,10 @@ try:
     )
         st.altair_chart(chart)
     with tab2:
-        st.line_chart(line_chart_college_attendance, x='year', y=['attended', 'non attended'], color=["#0000FF", "#FF0000"]) 
-    with tab3:  
+        st.line_chart(line_chart_college_attendance_by_year, x='year', y=['attended', 'non attended'], color=["#0000FF", "#FF0000"]) 
+    with tab3:
+        st.line_chart(line_chart_college_attendance_by_team, x='team', y=['attended', 'non attended'], color=["#0000FF", "#FF0000"]) 
+    with tab4:  
         st.subheader('Explore college attendance via sidebar dropdown', divider='blue')
         st.dataframe(filtered_college_data, hide_index=True)
     
@@ -123,35 +172,6 @@ try:
         st.subheader('Explore places of birth via sidebar dropdown', divider='blue')
         st.dataframe(filtered_birthplace_data, hide_index=True)
 
-
-    st.header('Explore Pitchers Data By Name')
-
-    @st.dialog('Did you know?')
-
-    def pitcher_name(name):
-        filtered_college_birthplace_displaying_data = college_birthplace_displaying_data[(college_birthplace_displaying_data['name'] == name)].reset_index()
-        collected_data = {}
-        list_of_teams=[]
-        for i in range(len(filtered_college_birthplace_displaying_data)):
-            year = int(filtered_college_birthplace_displaying_data['year'][i])
-            team = filtered_college_birthplace_displaying_data['nl team'][i] if pd.notna(filtered_college_birthplace_displaying_data['nl team'][i]) else filtered_college_birthplace_displaying_data['al team'][i]
-            if team not in collected_data.keys():
-                collected_data[team] = [year]
-                list_of_teams.append(team)
-            else:
-                collected_data[team].append(year)
-
-        team_and_year_played = []
-        for team_name in list_of_teams:
-            team_and_year_played.append(f"with the {team_name} in {", ".join(str(y) for y in collected_data[team_name])}")
-
-        st.write(f"**{name}** was born on {filtered_college_birthplace_displaying_data["birthdate"][0].strftime('%m-%d-%Y')} in {filtered_college_birthplace_displaying_data["birthplace"][0]} and played {", and ".join(team_and_year_played)}")
-
-    form = st.form("pitcher_data")
-    name = form.selectbox('Select Pitcher', pitchers_name, placeholder="Select or type pitcher name", index=None)
-    submitted = form.form_submit_button("Submit")
-    if submitted:
-        pitcher_name(name)
 
 
 except Exception as e:
