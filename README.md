@@ -38,3 +38,15 @@ checkout into the `dataEngeneering` folder.
 _Launch the Streamlit app:_
 
 `streamlit run streamlit_app.py`
+
+Screenshots:
+query via terminal:
+<img width="962" alt="image" src="https://github.com/user-attachments/assets/4783fd8a-082d-4af2-ad89-7347c3b55cac" />
+
+streamlit app:
+<img width="1918" alt="image" src="https://github.com/user-attachments/assets/e11b3a3e-0533-4856-9844-f55b2655a722" />
+<img width="1890" alt="image" src="https://github.com/user-attachments/assets/57aa2679-c1a2-4627-8850-017b9092cd1d" />
+<img width="1755" alt="image" src="https://github.com/user-attachments/assets/093ab4ac-a52b-4df2-b445-1e6ba6581ce6" />
+
+
+
