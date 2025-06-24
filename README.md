@@ -28,9 +28,10 @@ Install the required libraries:
 
 `pip install -r requirements.txt`
 
-Run the database import and query scripts from the terminal to generate the database.
+Run the database import and query scripts from the terminal to generate the database or use already existing results in the repository. 
 
 _Run database query program:_
+checkout into the `dataEngeneering` folder.
 
 `python sql_queries.py`
 
