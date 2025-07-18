@@ -1,5 +1,5 @@
 **MLB World Series Data Explorer**
-This project is part of the final assignment for the Python course at Code The Dream. It demonstrates end-to-end data handling: from web scraping and cleaning to database management and interactive data visualization.
+This project is end-to-end data handling: from web scraping and cleaning to database management and interactive data visualization.
 
 *Project Components*
 Web Scraping Program
